@@ -6,19 +6,20 @@
 // - staleSessionHeartbeatInterval: interval (in ms) at which activity heartbeats are sent up to the server
 // - staleSessionActivityEvents: the jquery events which are considered indicator of activity e.g. in an on() call.
 //
-var heartbeatInterval = Meteor.settings && Meteor.settings.public && Meteor.settings.public.staleSessionHeartbeatInterval || (3*60*1000); // 3mins
-var activityEvents = Meteor.settings && Meteor.settings.public && Meteor.settings.public.staleSessionActivityEvents || 'mousemove click keydown';
+var heartbeatInterval =
+    (Meteor.settings && Meteor.settings.public && Meteor.settings.public.staleSessionHeartbeatInterval) || 3 * 60 * 1000; // 3mins
+var activityEvents =
+    (Meteor.settings && Meteor.settings.public && Meteor.settings.public.staleSessionActivityEvents) || "mousemove click keydown";
 
 var activityDetected = false;
 
-Meteor.startup(function() {
-
+Meteor.startup(function () {
     //
     // periodically send a heartbeat if activity has been detected within the interval
     //
-    Meteor.setInterval(function() {
+    Meteor.setInterval(function () {
         if (Meteor.userId() && activityDetected) {
-            Meteor.call('heartbeat');
+            Meteor.call("heartbeat");
             activityDetected = false;
         }
     }, heartbeatInterval);
@@ -26,16 +27,11 @@ Meteor.startup(function() {
     //
     // detect activity and mark it as detected on any of the following events
     //
-    $(document).on(activityEvents, function() {
-       activityDetected = true;
+    $(document).on(activityEvents, function () {
+        activityDetected = true;
     });
 
-    //
-    // ensure a heartbeat is sent when the user first logs in
-    //
-    Tracker.autorun(function(){
-      if(Meteor.userId()){
-        Meteor.call('heartbeat');
-      }
-    });
+    if (Meteor.userId()) {
+        Meteor.call("heartbeat");
+    }
 });

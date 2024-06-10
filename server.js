@@ -21,7 +21,7 @@ Meteor.methods({
         if (!this.userId) {
             return;
         }
-        var user = Meteor.users.findOne(this.userId);
+        let user = await Meteor.users.findOneAsync(this.userId);
         if (user) {
             await Meteor.users.updateAsync(user._id, { $set: { heartbeat: new Date() } });
         }
@@ -33,7 +33,7 @@ Meteor.methods({
 //
 if (forceLogout !== false) {
     Meteor.setInterval(async function () {
-        var now = new Date(),
+        let now = new Date(),
             overdueTimestamp = new Date(now - inactivityTimeout);
         await Meteor.users.updateAsync(
             { heartbeat: { $lt: overdueTimestamp } },
